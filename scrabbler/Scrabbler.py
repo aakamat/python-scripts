@@ -15,10 +15,8 @@ from itertools import permutations, combinations
 
 def main():
     # Initialize / Create the variables and datasets that we would be using later.
-    num_words = 0
-    total_words = 0
-    word_value = 0
-    repeat_check = []
+    num_words, total_words, word_value, bingo = 0, 0, 0, 0
+    repeat_check, word_list = [], []
     repeat_check_dict = dict()
     alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                 'P', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
@@ -54,7 +52,6 @@ def main():
             print("Both values should be numbers. Please try again.\n")
 
     # Find all words matching the specified word length(s).
-    word_list = []
     for item in scrab_dict:
         if min_word_length <= len(item) <= max_word_length:
             total_words += 1
@@ -83,6 +80,8 @@ def main():
             print("\nThere are a maximum of 2 blank tiles in Scrabble.")
             print("Please enter a number from 0 to 2. Try again.")
 
+    print("\nPlease wait while we find the words for you...")
+
     # Break up user input of a string (for letters in the rack) into individual letters
     rack = [char for char in rack1]
 
@@ -93,7 +92,6 @@ def main():
                 # Code for the Basic Anagram Finder
                 for current in permutations(current_set):
                     current_word = ''.join(current).upper()
-
                     # Check for legality of the generated word and avoid duplicates
                     if current_word in word_list and current_word not in repeat_check:
                         # Compute point score for the matching word
@@ -101,7 +99,6 @@ def main():
                             key = current_word[let]
                             letter_value = points[key]
                             word_value += letter_value
-
                         # Write the word and its point score to the file we created earlier
                         word_with_value = (current_word + " [" + str(word_value) + "]")
                         word_file.write(word_with_value)
@@ -118,36 +115,29 @@ def main():
             rack.append(alphabet[num])  # Add an alphabet to the rack
             added_ltr1 = alphabet[num].upper()  # Save the added letter to a variable
             added_val1 = points[added_ltr1]     # Save the point score of the added letter to a variable
-
             for number in range(min_word_length, max_word_length + 1):  # For Loop to iterate for word length
                 for current_set in combinations(rack, number):  # Combinations Function
-
                     # Code for the Basic Anagram Finder
                     for current in permutations(current_set):
                         current_word = ''.join(current).upper()
-
                         # Check for legality of the generated word and avoid duplicates
                         if current_word in word_list and current_word not in repeat_check:
-
                             # Compute point score for the matching word
                             for let in range(0, len(current_word)):
                                 key = current_word[let]
                                 letter_value = points[key]
                                 word_value += letter_value
-
                             # Reduce the point score of the letter added to substitute the blank tile
                             if current_word.count(added_ltr1) > rack1.count(added_ltr1):
                                 word_value -= added_val1
                             else:
                                 pass
-
                             # Formatting the final output that will detail the word, score and substitutions, if any
                             word_with_value = (current_word + " [" + str(word_value) + "]")
                             if added_ltr1 not in rack1:
                                 word_with_value += ("  Blank converted to: " + added_ltr1)
                             else:
                                 pass
-
                             # Write the final output the file we created earlier
                             word_file.write(word_with_value)
                             word_file.write("\n")
@@ -156,7 +146,6 @@ def main():
                             repeat_check.append(current_word)   # Add the matched word to a list to avoid duplication
                             repeat_check_dict[current_word] = word_value
                             word_value = 0  # Reset the point score to zero for the next word
-
             rack.remove(alphabet[num])      # Remove the added alphabet / Restore the original rack
 
     # Find solution if there are 2 blanks in the rack.
@@ -165,28 +154,22 @@ def main():
             rack.append(alphabet[num])  # Add a letter to the rack
             added_ltr1 = alphabet[num].upper()  # Save the first added letter to a variable
             added_val1 = points[added_ltr1]     # Save the point score of the first added letter to a variable
-
             for num1 in range(0, 26):  # Iterate 26 times to cycle through the alphabet to substitute second blank tile
                 rack.append(alphabet[num1])     # Add a letter to the rack
                 added_ltr2 = alphabet[num1].upper()     # Save the second added letter to a variable
                 added_val2 = points[added_ltr2]         # Save the point score of the second added letter to a variable
-
                 for number in range(min_word_length, max_word_length + 1):  # For Loop to iterate for word length
                     for current_set in combinations(rack, number):  # Combinations Function
-
                         # Code for the Basic Anagram Finder
                         for current in permutations(current_set):
                             current_word = ''.join(current).upper()
-
                             # Check for legality of the generated word and avoid duplicates
                             if current_word in word_list and current_word not in repeat_check:
-
                                 # Compute point score for the matching word
                                 for let in range(0, len(current_word)):
                                     key = current_word[let]
                                     letter_value = points[key]
                                     word_value += letter_value
-
                                 # Reduce the point score of the first letter added to substitute the blank tile
                                 if current_word.count(added_ltr1) > rack1.count(added_ltr1):
                                     word_value -= added_val1
@@ -197,7 +180,6 @@ def main():
                                     word_value -= added_val2
                                 else:
                                     pass
-
                                 # Formatting the final output that will detail the word, score and substitutions, if any
                                 word_with_value = (current_word + " [" + str(word_value) + "]")
                                 if current_word.count(added_ltr1) > rack1.count(added_ltr1):
@@ -208,7 +190,6 @@ def main():
                                     word_with_value += ("  Blank converted to: " + added_ltr2)
                                 else:
                                     pass
-
                                 # Write the final output the file we created earlier
                                 word_file.write(word_with_value)
                                 word_file.write("\n")
@@ -217,13 +198,33 @@ def main():
                                 repeat_check.append(current_word)   # Add matched word to a list to avoid duplication
                                 repeat_check_dict[current_word] = word_value
                                 word_value = 0  # Reset point score to zero for the next word
-
                 rack.remove(alphabet[num1])     # Remove the second added alphabet
             rack.remove(alphabet[num])  # Remove the first added alphabet / Restore the original rack
 
+    print("\nHERE ARE THE RESULTS...")
+    print("---------------------------------")
+
+    # Calculate number of words based on word length
+    for words in range(min_word_length, max_word_length + 1):
+        count = len([item for item in repeat_check if len(item) == words])
+        if words == 7:
+            bingo += 1
+        else:
+            pass
+        print(words, "letter words found:", count)
+
+    # Print number of bingo found if any
+    if bingo > 0:
+        print("Hey Congratulations! We found", bingo, "bingo for you!!")
+    else:
+        pass
+
     # The final results / solution of matched words
-    print("\nWe found a total of", num_words, "matching words!")
-    print("The list of matching words has been exported to words.txt file.")
+    print("---------------------------------")
+    print("Total matching words found:", num_words)
+    print("=================================")
+    print("The list of matching words has been exported to words.txt file.\n")
+    print("Thank you for using Scrabbler.")
 
 
 if __name__ == '__main__':
